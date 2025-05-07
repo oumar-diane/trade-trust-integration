@@ -1,0 +1,40 @@
+{
+  "name": "trade-trust-integration",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "start": "node dist/app.js",
+    "dev": "nodemon",
+    "script:generate-did-web": "dotenv -e .env npx ts-node ./src/scripts/generate-did-web.ts",
+    "script:deploy-token-registry": "dotenv -e .env npx ts-node ./src/scripts/deploy-token-registry.ts"
+  },
+  "dependencies": {
+    "@ngrok/ngrok": "^1.4.1",
+    "@trustvc/trustvc": "^1.4.5",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^16.5.0",
+    "ethers": "^6.13.5",
+    "express": "5.0.0",
+    "morgan": "~1.9.1"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
+    "@types/express": "^4.17.21",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "dotenv-cli": "^8.0.0",
+    "module-alias": "^2.2.3",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.15",
+    "typescript": "^5.8.3"
+  },
+  "_moduleAliases": {
+    "@": "dist",
+    "@app": "dist/src"
+  }
+}

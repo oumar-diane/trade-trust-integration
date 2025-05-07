@@ -1,0 +1,49 @@
+{
+        "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://w3id.org/security/bbs/v1",
+            "https://trustvc.io/context/transferable-records-context.json",
+            "https://trustvc.io/context/render-method-context.json",
+            "https://trustvc.io/context/attachments-context.json",
+            "https://schemata.openattestation.com/io/tradetrust/bill-of-lading/1.0/bill-of-lading-context.json"
+        ],
+        "type": [
+            "VerifiableCredential"
+        ],
+        "credentialStatus": {
+            "type": "TransferableRecords",
+            "tokenNetwork": {
+                "chain": "ETH",
+                "chainId": "11155111"
+            },
+            "tokenRegistry": "0x5Ba5BB583e369fB7790D89c39c08C10b6062Ce7F",
+            "tokenId": "bfe369d5edc24d313b59fc200dfd70e40def37d790b33fc36a62bc5cc636493d"
+        },
+        "renderMethod": [
+            {
+                "id": "https://generic-templates.tradetrust.io",
+                "type": "EMBEDDED_RENDERER",
+                "templateName": "BILL_OF_LADING"
+            }
+        ],
+        "credentialSubject": {
+            "shipper": {
+                "address": {}
+            },
+            "consignee": {},
+            "notifyParty": {},
+            "blNumber": "20250107",
+            "scac": "20250107"
+        },
+        "issuanceDate": "2025-05-02T03:52:00.813Z",
+        "expirationDate": "2025-08-02T03:52:00.813Z",
+        "issuer": "did:web:recently-unique-lizard.ngrok-free.app",
+        "id": "urn:bnid:_:01968f1f-622e-7336-b26d-5352617fd9ad",
+        "proof": {
+            "type": "BbsBlsSignature2020",
+            "created": "2025-05-02T03:52:01Z",
+            "proofPurpose": "assertionMethod",
+            "proofValue": "sJ7VlIUelvaYmbihXNODIr7PhsEY8s/SrXaZPOOMlyQYghBQB+SBLW9fvm4Fr6VEMKVg9X44OT7IyqxonIH7xLuNJjBkG7KYma9urLMBCo4x5JoTWPaG1p7URXapIpy1ng+avITVXJin9XQoxPxyNA==",
+            "verificationMethod": "did:web:recently-unique-lizard.ngrok-free.app#keys-1"
+        }
+    }

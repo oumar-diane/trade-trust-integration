@@ -1,0 +1,37 @@
+{
+  "id": "did:web:recently-unique-lizard.ngrok-free.app",
+  "verificationMethod": [
+    {
+      "type": "Bls12381G2Key2020",
+      "id": "did:web:recently-unique-lizard.ngrok-free.app#keys-1",
+      "controller": "did:web:recently-unique-lizard.ngrok-free.app",
+      "publicKeyBase58": "25fA6efGSNf6ZnCe9QVVELoXQnXVZSmJNe1K3rF3dGyHaG8W42KsVeQeKRxiDWiwq92ewedxkGZnyWc9MBt31WLSDwp6JHofTF2DTxjRSq1NAtpfFtT6Zb7UxCTMo17KxBVn"
+    },
+    {
+      "type": "Bls12381G2Key2020",
+      "id": "did:web:recently-unique-lizard.ngrok-free.app#keys-2",
+      "controller": "did:web:recently-unique-lizard.ngrok-free.app",
+      "publicKeyBase58": "26ygRJUVwnpqDrCSunbZtEuqpxyZRP2wap86u4nubmzrTNehpc8USk2iX8sYFXwWoMp69mDkrirobxKqbRsikqNcH2p17cQx1JMfsJqshUYLx9hFG7EBKNSGh1EM9vi5oMER"
+    }
+  ],
+  "@context": [
+    "https://www.w3.org/ns/did/v1",
+    "https://w3id.org/security/suites/bls12381-2020/v1"
+  ],
+  "authentication": [
+    "did:web:recently-unique-lizard.ngrok-free.app#keys-1",
+    "did:web:recently-unique-lizard.ngrok-free.app#keys-2"
+  ],
+  "assertionMethod": [
+    "did:web:recently-unique-lizard.ngrok-free.app#keys-1",
+    "did:web:recently-unique-lizard.ngrok-free.app#keys-2"
+  ],
+  "capabilityInvocation": [
+    "did:web:recently-unique-lizard.ngrok-free.app#keys-1",
+    "did:web:recently-unique-lizard.ngrok-free.app#keys-2"
+  ],
+  "capabilityDelegation": [
+    "did:web:recently-unique-lizard.ngrok-free.app#keys-1",
+    "did:web:recently-unique-lizard.ngrok-free.app#keys-2"
+  ]
+}
