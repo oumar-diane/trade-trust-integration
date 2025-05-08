@@ -9,8 +9,8 @@ import {connect} from "@ngrok/ngrok"
 
 
 const app = express();
-const port = (process.env.PORT || 3000) as number;
-const hostname = process.env.HOST || "localhost";
+const port = (process.env.PORT || 80) as number;
+const hostname = process.env.HOST || "0.0.0.0";
 
 function boostrapHooks(){
     app.use(logger('dev'));
