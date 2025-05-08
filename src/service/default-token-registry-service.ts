@@ -2,9 +2,12 @@ import {TokenRegistryService} from "./interface/token-registry-service";
 import {TokenRegistryModel} from "../model/token-registry-model";
 import {CHAIN_ID, SUPPORTED_CHAINS, v5ContractAddress, v5Contracts} from "@trustvc/trustvc";
 import {getRPCUrl} from "../util/provider-utils";
-import {ethers, TransactionReceipt, TransactionRequest} from "ethers";
+import {ethers} from "ethers";
 import {utils as v5Utils} from "@tradetrust-tt/token-registry-v4";
 import {SimpleParamsValidator} from "./simple-params-validator";
+import {Interface} from "@ethersproject/abi";
+import { TransactionReceipt } from "@ethersproject/providers";
+import { TransactionRequest } from "@ethersproject/abstract-provider";
 
 
 export class DefaultTokenRegistryService implements TokenRegistryService {
@@ -28,7 +31,7 @@ export class DefaultTokenRegistryService implements TokenRegistryService {
         const { TDocDeployer__factory } = v5Contracts;
 
         const { TokenImplementation, Deployer } = v5ContractAddress;
-        const deployerInterface = new ethers.Interface(TDocDeployer__factory.abi);
+        const deployerInterface = new Interface(TDocDeployer__factory.abi);
         const initParam = v5Utils.encodeInitParams({
             name: tokenRegistryModel.name!,
             symbol: tokenRegistryModel.symbol!,
@@ -65,7 +68,7 @@ export class DefaultTokenRegistryService implements TokenRegistryService {
 
     async getTokenRegistryDeploymentEvent(transactionReceipt: TransactionReceipt){
         let registryAddress;
-        const deployerInterface = new ethers.Interface(v5Contracts.TDocDeployer__factory.abi);
+        const deployerInterface = new Interface(v5Contracts.TDocDeployer__factory.abi);
 
         if (ethers.version.includes("/5.")) {
             registryAddress = v5Utils.getEventFromReceipt<any>(
@@ -79,7 +82,7 @@ export class DefaultTokenRegistryService implements TokenRegistryService {
             throw new Error("Unsupported ethers version");
         }
         return {
-            transactionHash: transactionReceipt.hash,
+            transactionHash: transactionReceipt.blockHash,
             contractAddress: registryAddress,
             blockNumber: transactionReceipt.blockNumber,
             gasUsed: transactionReceipt.gasUsed,

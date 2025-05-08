@@ -12,12 +12,9 @@ let documentService = new DefaultDocumentService()
 router.post("/titleEscrow", async function(req, res, next) {
     try {
         const body = req.body as SignedVerifiableCredential;
-        console.log("body", body);
-        const transferabilityResult = await documentService.getTitleEscrowAddress(body);
+        const transferabilityResult = await documentService.getEscrowAddress(body);
 
-        return res.json({
-            ...transferabilityResult,
-        });
+        return res.json(transferabilityResult);
     } catch (error) {
         console.error(error);
         next(error);

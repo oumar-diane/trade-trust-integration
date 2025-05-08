@@ -1,6 +1,6 @@
 import {DocumentsToVerify, SignedVerifiableCredential, SUPPORTED_CHAINS, VerificationFragment} from "@trustvc/trustvc";
 import {DocumentModel, DocumentTransferabilityModel, TransferabilityActions} from "../../model/document-model";
-import {TransactionRequest} from "ethers";
+import { TransactionRequest } from "@ethersproject/abstract-provider";
 
 
 /**
@@ -32,7 +32,7 @@ export interface DocumentService{
      * @param vc - The signed verifiable credential to apply the action to.
      * @returns A promise that resolves to the titleEscrow address request transaction.
      */
-    getTitleEscrowAddress(vc:SignedVerifiableCredential):Promise<TransactionRequest>;
+    getEscrowAddress(vc:SignedVerifiableCredential):Promise<{address:string}|undefined>;
 }
 
 const SUPPORTED_DOCUMENT: {

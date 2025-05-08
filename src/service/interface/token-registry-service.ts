@@ -1,5 +1,7 @@
 import {TokenRegistryModel} from "../../model/token-registry-model";
-import {TransactionReceipt, TransactionRequest} from "ethers";
+import { TransactionReceipt } from "@ethersproject/providers";
+import { TransactionRequest } from "@ethersproject/abstract-provider";
+
 
 /**
  * service to deploy token registry in blockchain network

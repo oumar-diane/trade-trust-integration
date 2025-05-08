@@ -1,6 +1,6 @@
 import {
     CHAIN_ID,
-    encrypt,
+    encrypt, getTitleEscrowAddress,
     getTokenId,
     SignedVerifiableCredential,
     signW3C,
@@ -10,11 +10,14 @@ import {
 } from "@trustvc/trustvc";
 import {getRPCUrl} from "../util/provider-utils";
 import {DocumentModel, DocumentTransferabilityModel, TransferabilityActions} from "../model/document-model";
-import {ethers, TransactionRequest} from "ethers";
+import {ethers} from "ethers";
+import { TransactionRequest } from "@ethersproject/abstract-provider";
 import {TradeTrustToken__factory} from "@trustvc/trustvc/token-registry-v5/contracts";
 import {DocumentService, getDocumentSchema} from "./interface/document-service";
 import {SimpleParamsValidator} from "./simple-params-validator";
 import {decryptWithPrivateKey} from "../util/crypto-utils";
+import { Interface } from "@ethersproject/abi";
+
 
 export class DefaultDocumentService implements DocumentService {
 
@@ -35,7 +38,7 @@ export class DefaultDocumentService implements DocumentService {
         Object.assign(DefaultDocumentService.CHAININFO, {
             rpcUrl:getRPCUrl(transferabilityData.chainId!) ?? SUPPORTED_CHAINS[transferabilityData.chainId!]
         })
-        const title_escrow_factory = new ethers.Interface(v5Contracts.TitleEscrow__factory.abi);
+        const title_escrow_factory = new Interface(v5Contracts.TitleEscrow__factory.abi);
         const params =  await this.getTransferabilityAction(action, vc, transferabilityData) as any[]
         const title_escrow_tx =  title_escrow_factory.encodeFunctionData(action, [...params]);
 
@@ -47,10 +50,8 @@ export class DefaultDocumentService implements DocumentService {
     }
 
     async createDocument(rawDocument: DocumentModel) {
-        if(process.env.NODE_ENV === "development"){
-            // decrypt the didKeyPairs
-            rawDocument.didKeyPairs = decryptWithPrivateKey(process.env.SIGNER_PRIVATE_KEY! , rawDocument.didKeyPairs)
-        }
+        // decrypt the didKeyPairs
+        rawDocument.didKeyPairs = decryptWithPrivateKey(process.env.SIGNER_PRIVATE_KEY! , rawDocument.didKeyPairs)
         // validate required parameters
         this.paramsValidator.validate({
             "Document not supported":rawDocument.documentId,
@@ -83,7 +84,7 @@ export class DefaultDocumentService implements DocumentService {
 
         // Issue the document on chain:
         const tokenId = getTokenId(signedW3CDocument!);
-        const tradeTrustToken_factory_abi = new ethers.Interface(TradeTrustToken__factory.abi);
+        const tradeTrustToken_factory_abi = new Interface(TradeTrustToken__factory.abi);
 
         let tx
         // Encrypt remarks
@@ -111,17 +112,26 @@ export class DefaultDocumentService implements DocumentService {
         } as TransactionRequest
     }
 
-    async getTitleEscrowAddress(vc:SignedVerifiableCredential){
+    async getEscrowAddress(vc:SignedVerifiableCredential){
         const tokenId = getTokenId(vc);
         const tokenRegistry = (vc.credentialStatus as any).tokenRegistry;
+        const network = (vc.credentialStatus as any).tokenNetwork
+        const chain = SUPPORTED_CHAINS[network.chainId as CHAIN_ID];
+        const JsonRpcProvider = ethers.version.startsWith("6.")
+            ? (ethers as any).JsonRpcProvider
+            : (ethers as any).providers.JsonRpcProvider;
+        Object.assign(chain, {
+            rpcUrl:getRPCUrl(network.chainId) ?? chain.rpcUrl
+        })
+        const provider = new JsonRpcProvider(chain.rpcUrl);
+        if (!provider) return;
+        const titleEscrowAddress = await getTitleEscrowAddress(
+            tokenRegistry,
+            tokenId,
+            provider,
+        );
+        return {address:titleEscrowAddress};
 
-        const functionSelector = ethers.id("getAddress(address,uint256)").slice(0, 10);
-        const encodedParams = ethers.AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [tokenRegistry, tokenId]);
-        const calldata = functionSelector + encodedParams.slice(2);
-        return{
-            to:tokenRegistry,
-            data: calldata,
-        }
     }
 
     protected cleanedJsonString(jsonString: string) {
