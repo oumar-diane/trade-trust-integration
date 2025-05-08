@@ -9,8 +9,7 @@ import {connect} from "@ngrok/ngrok"
 
 
 const app = express();
-const port = (process.env.PORT || 80) as number;
-const hostname = process.env.HOST || "localhost";
+const port = (process.env.PORT || 8080) as number;
 
 function boostrapHooks(){
     app.use(logger('dev'));
@@ -45,7 +44,7 @@ function boostrapHooks(){
 
 
 boostrapHooks();
-app.listen(port, hostname , () => {
+app.listen(port , () => {
     console.log("Server is running on port "+port);
 });
 
