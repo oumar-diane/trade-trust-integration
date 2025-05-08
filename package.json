@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
-    "start": "node build/app.js",
+    "start": "node dist/app.js",
     "dev": "nodemon",
     "script:generate-did-web": "dotenv -e .env npx ts-node ./src/scripts/generate-did-web.ts",
     "script:deploy-token-registry": "dotenv -e .env npx ts-node ./src/scripts/deploy-token-registry.ts"
