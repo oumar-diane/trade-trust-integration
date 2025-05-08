@@ -46,7 +46,7 @@ function boostrapHooks(){
 
 boostrapHooks();
 app.listen(port, hostname , () => {
-    console.log("Server is running on port 3000");
+    console.log("Server is running on port "+port);
 });
 
 if(process.env.NODE_ENV === 'development') {
