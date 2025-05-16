@@ -112,7 +112,7 @@ export class DefaultTokenRegistryService implements TokenRegistryService {
         }
         await this.tokenRegistryStorageService!.store(
             tokenRegistryModel.organizationId!,
-            tokenRegistryModel.transactionReceipt?.to!,
+            registryAddress,
             {
             chainId: tokenRegistryModel.chainId,
             transactionHash: tokenRegistryModel.transactionReceipt?.transactionHash,
