@@ -89,7 +89,7 @@ export class DefaultDocumentService implements DocumentService {
         // decrypt the didKeyPairs
         const didKeyJsonPath = path.join(__dirname, "../../didKey.json");
         const didKeyJson = fs.readFileSync(didKeyJsonPath, "utf-8");
-        rawDocument.didKeyPairs = decryptWithPrivateKey(process.env.SIGNER_PRIVATE_KEY! , didKeyJson)
+        rawDocument.didKeyPairs = decryptWithPrivateKey(process.env.SIGNER_PRIVATE_KEY! , JSON.parse(didKeyJson))
         // validate required parameters
         this.paramsValidator.validate({
             "Document not supported":rawDocument.documentId,
