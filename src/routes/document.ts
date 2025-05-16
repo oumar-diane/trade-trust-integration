@@ -61,6 +61,7 @@ router.post("/:documentId", async function(req, res, next) {
         documentId = documentId?.toUpperCase() || '';
 
         const rawDocument = req.body as DocumentModel;
+        console.log("body: ", req.body)
         rawDocument.documentId = documentId;
 
         const result = await documentService.createDocument(rawDocument)
