@@ -2,24 +2,26 @@ import express from "express";
 import {SignedVerifiableCredential,} from "@trustvc/trustvc";
 import {DefaultDocumentService} from "../service/default-document-service";
 import {DocumentModel, DocumentTransferabilityModel, TransferabilityActions} from "../model/document-model";
+import {AzureDocumentStorageService} from "../service/azure-document-storage-service";
 
 const router = express.Router();
 
+const documentStoreService = new AzureDocumentStorageService()
+let documentService = new DefaultDocumentService(documentStoreService)
 
-let documentService = new DefaultDocumentService()
-
-// apply transferability action to a document
-router.post("/titleEscrow", async function(req, res, next) {
+// retrieve issued documents by token registry
+router.get("/", async function(req, res, next) {
     try {
-        const body = req.body as SignedVerifiableCredential;
-        const transferabilityResult = await documentService.getEscrowAddress(body);
-
+        const {organizationId} = req.query;
+        const transferabilityResult = await documentService.getDocuments(organizationId as string);
         return res.json(transferabilityResult);
     } catch (error) {
         console.error(error);
         next(error);
     }
 })
+
+
 
 // apply transferability action to a document
 router.post("/transferability/:actionName", async function(req, res, next) {
@@ -52,7 +54,7 @@ router.post("/verification", async function(req, res, next) {
     }
 })
 
-// issue a verifiable credential
+// create a verifiable record document
 router.post("/:documentId", async function(req, res, next) {
     try {
         let { documentId } = req.params;
@@ -65,6 +67,19 @@ router.post("/:documentId", async function(req, res, next) {
 
         return res.json(result);
 
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+});
+
+// issue a verifiable record document
+router.post("/", async function(req, res, next) {
+    try {
+        const {organizationId} = req.query;
+        const rawDocument = req.body as SignedVerifiableCredential;
+        await documentService.issueDocument(organizationId as string,rawDocument)
+        return res.status(200).json();
     } catch (error) {
         console.error(error);
         next(error);

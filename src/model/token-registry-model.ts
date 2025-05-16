@@ -1,3 +1,4 @@
+import {TransactionReceipt} from "@ethersproject/providers";
 
 
 export interface TokenRegistryModel{
@@ -5,4 +6,6 @@ export interface TokenRegistryModel{
     name?: string,
     symbol?: string,
     deployer?: string,
+    organizationId?: string,
+    transactionReceipt?:TransactionReceipt
 }

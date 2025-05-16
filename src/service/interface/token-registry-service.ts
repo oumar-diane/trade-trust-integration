@@ -1,6 +1,6 @@
-import {TokenRegistryModel} from "../../model/token-registry-model";
-import { TransactionReceipt } from "@ethersproject/providers";
+import {TokenRegistryModel} from "@app/model/token-registry-model";
 import { TransactionRequest } from "@ethersproject/abstract-provider";
+import {TokenRegistryDTO} from "@app/service/interface/storage-manager-service";
 
 
 /**
@@ -15,22 +15,23 @@ export interface TokenRegistryService {
      *
      * @returns {@link TransactionRequest} deployment result
      */
-    deployTokenRegistry(tokenRegistryModel:TokenRegistryModel): Promise<{ transaction: TransactionRequest }>;
+    deployTokenRegistry(tokenRegistryModel:TokenRegistryModel): Promise<TransactionRequest>;
 
     /**
-     * get the token registry contract address from the deployement transaction receipt
+     * get the token registry contract address from the deployment transaction receipt
      *
-     * @param transactionReceipt - the signed transaction receipt
      *
-     * @returns {@link TokenRegistryReturnValue} deployment result
+     * @returns {@link TokenRegistryDTO} deployment result
+     * @param tokenRegistryModel
      */
-    getTokenRegistryDeploymentEvent(transactionReceipt:TransactionReceipt): Promise<TokenRegistryReturnValue>;
-}
+    getTokenRegistryDeploymentEvent(tokenRegistryModel:TokenRegistryModel): Promise<TokenRegistryDTO>;
 
-export type TokenRegistryReturnValue = {
-    transactionHash: any;
-    contractAddress: any,
-    blockNumber: any,
-    gasUsed: any,
-    status: any,
+    /**
+     * get deployed token registry contract address for the given domain
+     *
+     *
+     * @returns {@link TokenRegistryDTO} deployment result
+     * @param organizationId
+     */
+    getDeployedTokenRegistry(organizationId:string): Promise<TokenRegistryDTO[]>;
 }

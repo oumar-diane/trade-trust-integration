@@ -10,4 +10,6 @@ export interface DidService {
      * @returns A promise that resolves to the generated DID.
      */
     generateDid(domain: string): Promise<any>;
+
+
 }

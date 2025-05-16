@@ -1,6 +1,7 @@
 import {DocumentsToVerify, SignedVerifiableCredential, SUPPORTED_CHAINS, VerificationFragment} from "@trustvc/trustvc";
 import {DocumentModel, DocumentTransferabilityModel, TransferabilityActions} from "../../model/document-model";
 import { TransactionRequest } from "@ethersproject/abstract-provider";
+import {DocumentDTO} from "@app/service/interface/storage-manager-service";
 
 
 /**
@@ -33,6 +34,19 @@ export interface DocumentService{
      * @returns A promise that resolves to the titleEscrow address request transaction.
      */
     getEscrowAddress(vc:SignedVerifiableCredential):Promise<{address:string}|undefined>;
+    /**
+     * issue document after validation to document store.
+     * @param organizationId - The organization id.
+     * @param vc - The signed verifiable credential to apply the action to.
+     */
+    issueDocument(organizationId:string,vc:SignedVerifiableCredential):Promise<void>;
+    /**
+     * get a document after validation to document store.
+     * @param organizationId - The organization id.
+     * @param documentId - id of the document.
+     * @returns A promise that resolves to the titleEscrow address request transaction.
+     */
+    getDocuments(organizationId:string, documentId:string):Promise<DocumentDTO[]>;
 }
 
 const SUPPORTED_DOCUMENT: {

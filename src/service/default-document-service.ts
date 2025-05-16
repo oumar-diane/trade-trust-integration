@@ -17,6 +17,9 @@ import {DocumentService, getDocumentSchema} from "./interface/document-service";
 import {SimpleParamsValidator} from "./simple-params-validator";
 import {decryptWithPrivateKey} from "../util/crypto-utils";
 import { Interface } from "@ethersproject/abi";
+import {DocumentDTO, StorageManagerService} from "@app/service/interface/storage-manager-service";
+import path from "node:path";
+import fs from "node:fs";
 
 
 export class DefaultDocumentService implements DocumentService {
@@ -24,7 +27,40 @@ export class DefaultDocumentService implements DocumentService {
     public static readonly CHAINID: CHAIN_ID = process.env.NET as CHAIN_ID ?? CHAIN_ID.amoy;
     public static readonly CHAININFO = SUPPORTED_CHAINS[this.CHAINID];
 
+    private documentStorageService: StorageManagerService<DocumentDTO>;
+
     protected paramsValidator = SimpleParamsValidator.createValidator()
+
+    constructor(documentStorageService: StorageManagerService<DocumentDTO>) {
+        this.documentStorageService = documentStorageService
+    }
+
+    async getDocuments(organizationId:string){
+        try {
+            const allDocs =  await this.documentStorageService.retrieveAll()
+            return allDocs.filter((doc)=>doc.organizationId === organizationId)
+        }catch (e){
+            throw new Error("Document not found");
+        }
+    }
+
+    async issueDocument(organizationId:string,vc:SignedVerifiableCredential){
+
+        //parameters validation
+        this.paramsValidator.validate({
+            "the organizationId is required":organizationId,
+            "the signedW3CDocument is required":vc
+        })
+
+        await this.documentStorageService.store(
+            organizationId,
+            vc.id,
+            {
+                organizationId:organizationId,
+                signedW3CDocument: vc
+            }
+        )
+    }
 
     async applyVerification(signedW3CDocument: SignedVerifiableCredential) {
         // Validate required parameters
@@ -51,7 +87,9 @@ export class DefaultDocumentService implements DocumentService {
 
     async createDocument(rawDocument: DocumentModel) {
         // decrypt the didKeyPairs
-        rawDocument.didKeyPairs = decryptWithPrivateKey(process.env.SIGNER_PRIVATE_KEY! , rawDocument.didKeyPairs)
+        const didKeyJsonPath = path.join(__dirname, "../../didKey.json");
+        const didKeyJson = fs.readFileSync(didKeyJsonPath, "utf-8");
+        rawDocument.didKeyPairs = decryptWithPrivateKey(process.env.SIGNER_PRIVATE_KEY! , didKeyJson)
         // validate required parameters
         this.paramsValidator.validate({
             "Document not supported":rawDocument.documentId,
@@ -59,7 +97,6 @@ export class DefaultDocumentService implements DocumentService {
             "tokenRegistry is required":rawDocument.holder,
             "tokenRegistryAddress is required":rawDocument.tokenRegistryAddress,
             "chainId is required":rawDocument.chainId,
-            "didKeyPairs is required":rawDocument.didKeyPairs,
             "credentialSubject is required":rawDocument.credentialSubject,
         })
 
@@ -104,6 +141,7 @@ export class DefaultDocumentService implements DocumentService {
         }
 
 
+
         return {
             to:rawDocument.tokenRegistryAddress,
             signedW3CDocument: signedW3CDocument,
@@ -143,16 +181,6 @@ export class DefaultDocumentService implements DocumentService {
         const defaultExpirationDate = new Date();
         defaultExpirationDate.setMonth(defaultExpirationDate.getMonth() + 3);
         return (expirationDate != undefined && expirationDate != '') ? new Date(expirationDate): defaultExpirationDate;
-    }
-
-    protected getProvider(){
-        let provider;
-        if (ethers.version.startsWith('6.')) {
-            provider = new (ethers as any).JsonRpcProvider(DefaultDocumentService.CHAININFO.rpcUrl);
-        } else if (ethers.version.includes('/5.')) {
-            provider = new (ethers as any).providers.JsonRpcProvider(DefaultDocumentService.CHAININFO.rpcUrl);
-        }
-        return provider;
     }
 
 

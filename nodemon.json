@@ -1,5 +1,6 @@
 {
   "watch": ["src"],
   "ext": "ts",
+  "ignore": ["**/__tests__/**", "**/*.test.ts"],
   "exec": "cross-env NODE_ENV=development ts-node src/app.ts"
 }

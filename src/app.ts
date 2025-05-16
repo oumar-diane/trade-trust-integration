@@ -6,6 +6,7 @@ import {didRouter} from "./routes/did";
 import {documentRouter} from "./routes/document";
 import {tokenRegistryRouter} from "./routes/token-registry";
 import {connect} from "@ngrok/ngrok"
+import cors from "cors"
 
 
 const app = express();
@@ -14,6 +15,7 @@ const port = (process.env.PORT || 8080) as number;
 function boostrapHooks(){
     app.use(logger('dev'));
     app.use(json());
+    app.use(cors());
     app.use(urlencoded({ extended: false }));
     app.use(cookieParser());
     // Add middleware to parse JSON bodies

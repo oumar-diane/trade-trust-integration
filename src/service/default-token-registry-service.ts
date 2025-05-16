@@ -6,15 +6,31 @@ import {ethers} from "ethers";
 import {utils as v5Utils} from "@tradetrust-tt/token-registry-v4";
 import {SimpleParamsValidator} from "./simple-params-validator";
 import {Interface} from "@ethersproject/abi";
-import { TransactionReceipt } from "@ethersproject/providers";
-import { TransactionRequest } from "@ethersproject/abstract-provider";
+import {TransactionRequest} from "@ethersproject/abstract-provider";
+import {StorageManagerService, TokenRegistryDTO} from "../service/interface/storage-manager-service";
 
 
 export class DefaultTokenRegistryService implements TokenRegistryService {
 
     protected paramsValidator = SimpleParamsValidator.createValidator()
+    private tokenRegistryStorageService: StorageManagerService<TokenRegistryDTO>
 
-    async deployTokenRegistry(tokenRegistryModel: TokenRegistryModel): Promise<{ transaction: TransactionRequest }> {
+    constructor(tokenRegistryStorageService: StorageManagerService<TokenRegistryDTO>) {
+        this.tokenRegistryStorageService = tokenRegistryStorageService
+    }
+
+    async getDeployedTokenRegistry(organizationId: string){
+        //parameters validation
+        this.paramsValidator.validate({"the organizationId is required":organizationId})
+        try {
+            const allTokenRegistry =  await this.tokenRegistryStorageService.retrieveAll()
+            return allTokenRegistry.filter((tokenRegistry:TokenRegistryDTO) => tokenRegistry.organizationId === organizationId)
+        }catch (e){
+            throw new Error("Token registry not found for the given organizationId")
+        }
+    }
+
+    async deployTokenRegistry(tokenRegistryModel: TokenRegistryModel){
         //parameters validation
         this.paramsValidator.validate({
             "name is required": tokenRegistryModel.name,
@@ -61,32 +77,59 @@ export class DefaultTokenRegistryService implements TokenRegistryService {
             data: encodedFunctionData,
         }
         console.log(`Transaction: ` , transaction);
-        return {
-            transaction: transaction,
-        }
+        return transaction
     }
 
-    async getTokenRegistryDeploymentEvent(transactionReceipt: TransactionReceipt){
+    async getTokenRegistryDeploymentEvent(tokenRegistryModel: TokenRegistryModel){
+
+        //parameters validation
+        this.paramsValidator.validate({
+            "name is required": tokenRegistryModel.name,
+            "symbol is required": tokenRegistryModel.symbol,
+            "organizationId is required": tokenRegistryModel.organizationId,
+            "deployer is required": tokenRegistryModel.deployer,
+            "chainId is required": tokenRegistryModel.chainId,
+            "transactionReceipt is required": tokenRegistryModel.transactionReceipt,
+        })
+
+
         let registryAddress;
         const deployerInterface = new Interface(v5Contracts.TDocDeployer__factory.abi);
 
         if (ethers.version.includes("/5.")) {
-            registryAddress = v5Utils.getEventFromReceipt<any>(
-                transactionReceipt,
-                (deployerInterface as any).getEventTopic("Deployment")?.topicHash!,
-                deployerInterface,
-            ).args.deployed;
+            const deploymentTopic = deployerInterface.getEventTopic("Deployment");
+
+            const log = tokenRegistryModel.transactionReceipt!.logs.find(
+                (log) => log.topics[0] === deploymentTopic
+            );
+            if (!log) throw new Error("Deployment event not found in logs");
+            const parsedLog = deployerInterface.parseLog(log);
+            registryAddress = parsedLog.args.deployed;
         } else if (ethers.version.startsWith("6.")) {
-            registryAddress = v5Utils.getEventFromReceipt<any>(transactionReceipt, "Deployment", deployerInterface).args.deployed;
+            registryAddress = v5Utils.getEventFromReceipt<any>(tokenRegistryModel.transactionReceipt!, "Deployment", deployerInterface).args.deployed;
         } else {
             throw new Error("Unsupported ethers version");
         }
-        return {
-            transactionHash: transactionReceipt.blockHash,
+        await this.tokenRegistryStorageService!.store(
+            tokenRegistryModel.organizationId!,
+            tokenRegistryModel.transactionReceipt?.to!,
+            {
+            chainId: tokenRegistryModel.chainId,
+            transactionHash: tokenRegistryModel.transactionReceipt?.transactionHash,
             contractAddress: registryAddress,
-            blockNumber: transactionReceipt.blockNumber,
-            gasUsed: transactionReceipt.gasUsed,
-            status: transactionReceipt.status,
+            blockNumber: tokenRegistryModel.transactionReceipt?.blockNumber,
+            gasUsed: tokenRegistryModel.transactionReceipt?.gasUsed,
+            status: tokenRegistryModel.transactionReceipt?.status,
+            name: tokenRegistryModel.name,
+        })
+        return {
+            chainId: tokenRegistryModel.chainId,
+            transactionHash: tokenRegistryModel.transactionReceipt?.transactionHash,
+            contractAddress: registryAddress,
+            blockNumber: tokenRegistryModel.transactionReceipt?.blockNumber,
+            gasUsed: tokenRegistryModel.transactionReceipt?.gasUsed,
+            status: tokenRegistryModel.transactionReceipt?.status,
+            name: tokenRegistryModel.name,
         };
     }
 
