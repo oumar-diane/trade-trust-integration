@@ -111,4 +111,5 @@ export type TokenRegistryDTO = {
 export type DocumentDTO = {
     organizationId:string
     signedW3CDocument:any
+    name:string
 }

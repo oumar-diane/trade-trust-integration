@@ -38,13 +38,14 @@ export class DefaultDocumentService implements DocumentService {
     async getDocuments(organizationId:string){
         try {
             const allDocs =  await this.documentStorageService.retrieveAll()
+            console.log('documents: ', allDocs)
             return allDocs.filter((doc)=>doc.organizationId === organizationId)
         }catch (e){
             throw new Error("Document not found");
         }
     }
 
-    async issueDocument(organizationId:string,vc:SignedVerifiableCredential){
+    async issueDocument(organizationId:string, name:string,vc:SignedVerifiableCredential){
 
         //parameters validation
         this.paramsValidator.validate({
@@ -57,6 +58,7 @@ export class DefaultDocumentService implements DocumentService {
             vc.id,
             {
                 organizationId:organizationId,
+                name:name,
                 signedW3CDocument: vc
             }
         )
@@ -153,6 +155,7 @@ export class DefaultDocumentService implements DocumentService {
         return {
             to:rawDocument.tokenRegistryAddress,
             signedW3CDocument: signedW3CDocument,
+            name:rawDocument.name,
             data: tx,
 
         } as TransactionRequest

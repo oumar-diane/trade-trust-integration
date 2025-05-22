@@ -21,6 +21,7 @@ export class AzureDocumentStorageService implements StorageManagerService<Docume
     async update(organizationId:string, rowKey:string, entity: DocumentDTO){
         this.tableClient?.updateEntity({
             partitionKey: organizationId,
+            name:entity["name"],
             rowKey: rowKey,
             signedW3CDocument: JSON.stringify(entity["signedW3CDocument"]),
         })
@@ -67,6 +68,7 @@ export class AzureDocumentStorageService implements StorageManagerService<Docume
         const entities: DocumentDTO[] = []
         for await (const entity of this.tableClient!.listEntities()) {
             const documentDTO: DocumentDTO = {
+                name:entity["name"] as string,
                 organizationId:entity["organizationId"] as string,
                 signedW3CDocument: JSON.parse(entity["signedW3CDocument"] as string) as any,
             }
@@ -81,6 +83,7 @@ export class AzureDocumentStorageService implements StorageManagerService<Docume
             throw new Error(`token registry not found for address: ${rowKey}`);
         }
         return {
+            name:document["name"] as string,
             organizationId: document["organizationId"] as string,
             signedW3CDocument: JSON.parse(document["signedW3CDocument"] as string) as any,
         };
@@ -91,6 +94,7 @@ export class AzureDocumentStorageService implements StorageManagerService<Docume
             const tokenRegistryDTO: DocumentDTO & {partitionKey: string; rowKey: string} = {
                 partitionKey: organizationId,
                 rowKey: rowKey,
+                name:documentDTO.name,
                 organizationId:organizationId,
                 signedW3CDocument: JSON.stringify(documentDTO["signedW3CDocument"]),
             }

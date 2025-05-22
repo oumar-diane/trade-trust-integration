@@ -61,7 +61,7 @@ router.post("/:documentId", async function(req, res, next) {
         documentId = documentId?.toUpperCase() || '';
 
         const rawDocument = req.body as DocumentModel;
-        console.log("documentId: ", documentId)
+        console.log("body: ", rawDocument)
         rawDocument.documentId = documentId;
 
         const result = await documentService.createDocument(rawDocument)
@@ -78,8 +78,9 @@ router.post("/:documentId", async function(req, res, next) {
 router.post("/", async function(req, res, next) {
     try {
         const {organizationId} = req.query;
-        const rawDocument = req.body as SignedVerifiableCredential;
-        await documentService.issueDocument(organizationId as string,rawDocument)
+        const rawDocument = req.body as {name:string, signedW3CDocument:SignedVerifiableCredential};
+        console.log("body: ", rawDocument)
+        await documentService.issueDocument(organizationId as string, rawDocument.name , rawDocument.signedW3CDocument)
         return res.status(200).json();
     } catch (error) {
         console.error(error);

@@ -37,9 +37,10 @@ export interface DocumentService{
     /**
      * issue document after validation to document store.
      * @param organizationId - The organization id.
+     * @param name - document name.
      * @param vc - The signed verifiable credential to apply the action to.
      */
-    issueDocument(organizationId:string,vc:SignedVerifiableCredential):Promise<void>;
+    issueDocument(organizationId:string, name:string ,vc:SignedVerifiableCredential):Promise<void>;
     /**
      * get a document after validation to document store.
      * @param organizationId - The organization id.
