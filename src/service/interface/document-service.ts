@@ -27,7 +27,7 @@ export interface DocumentService{
      * @param action - The transferability action to apply.
      * @returns A promise that resolves to an object containing transferability action transaction.
      */
-    applyDocumentTransferabilityAction(transferabilityData:DocumentTransferabilityModel , vc:DocumentsToVerify | SignedVerifiableCredential, action:TransferabilityActions):Promise<TransactionRequest>;
+    applyDocumentTransferabilityAction(transferabilityData:DocumentTransferabilityModel, action:TransferabilityActions):Promise<TransactionRequest>;
     /**
      * get title escrow address.
      * @param vc - The signed verifiable credential to apply the action to.

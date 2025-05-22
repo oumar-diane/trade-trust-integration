@@ -10,7 +10,6 @@ import {
 } from "@trustvc/trustvc";
 import {getRPCUrl} from "../util/provider-utils";
 import {DocumentModel, DocumentTransferabilityModel, TransferabilityActions} from "../model/document-model";
-import {ethers} from "ethers";
 import { TransactionRequest } from "@ethersproject/abstract-provider";
 import {TradeTrustToken__factory} from "@trustvc/trustvc/token-registry-v5/contracts";
 import {DocumentService, getDocumentSchema} from "./interface/document-service";
@@ -20,6 +19,7 @@ import { Interface } from "@ethersproject/abi";
 import {DocumentDTO, StorageManagerService} from "@app/service/interface/storage-manager-service";
 import path from "node:path";
 import fs from "node:fs";
+import { ethers } from 'ethersV6';
 
 
 export class DefaultDocumentService implements DocumentService {
@@ -69,18 +69,26 @@ export class DefaultDocumentService implements DocumentService {
         return await verifyDocument(signedW3CDocument);
     }
 
-    async applyDocumentTransferabilityAction(transferabilityData:DocumentTransferabilityModel , vc:SignedVerifiableCredential, action:TransferabilityActions) {
-
-        Object.assign(DefaultDocumentService.CHAININFO, {
-            rpcUrl:getRPCUrl(transferabilityData.chainId!) ?? SUPPORTED_CHAINS[transferabilityData.chainId!]
+    async applyDocumentTransferabilityAction(transferabilityData:DocumentTransferabilityModel, action:TransferabilityActions) {
+        console.log("data: ", transferabilityData)
+        this.paramsValidator.validate({
+            "documentId not supported":transferabilityData.documentId,
+            "tokenId is required":transferabilityData.tokenId,
+            "tokenRegistry is required":transferabilityData.tokenRegistry,
+            "chainId is required":transferabilityData.chainId,
+            "newBeneficiary or newHolder is required":transferabilityData.newBeneficiary || transferabilityData.newHolder,
         })
-        const title_escrow_factory = new Interface(v5Contracts.TitleEscrow__factory.abi);
-        const params =  await this.getTransferabilityAction(action, vc, transferabilityData) as any[]
+        Object.assign(DefaultDocumentService.CHAININFO, {
+            rpcUrl:getRPCUrl(transferabilityData.chainId!) || ""
+        })
+        const title_escrow_factory = new ethers.Interface(v5Contracts.TitleEscrow__factory.abi);
+        const provider = this.getProvider()
+        const tile_escrow_address = await getTitleEscrowAddress(transferabilityData.tokenRegistry!, "0x" + transferabilityData.chainId, provider)
+        const params =  this.getTransferabilityAction(action, transferabilityData)
         const title_escrow_tx =  title_escrow_factory.encodeFunctionData(action, [...params]);
 
-        console.log("Transaction confirmed");
         return {
-            to: transferabilityData.titleEscrowAddress,
+            to: tile_escrow_address,
             data: title_escrow_tx,
         }
     }
@@ -189,39 +197,48 @@ export class DefaultDocumentService implements DocumentService {
     }
 
 
-    protected async getTransferabilityAction(action:string, vc:any, transferabilityData:DocumentTransferabilityModel){
+    protected getTransferabilityAction(action:string, transferabilityData:DocumentTransferabilityModel){
         let params:any[] = [];
-        const encryptedRemark = "0x" + encrypt(transferabilityData.remarks as string, vc.id);
+        const encryptedRemark = "0x" + encrypt(transferabilityData.remarks || action as string, transferabilityData.documentId!);
 
         switch (action) {
-            case "transferHolder" :
+            case TransferabilityActions.TRANSFER_HOLDER :
                 if (!this.isAddress(transferabilityData.newHolder as string)) {
-                    throw new Error("Invalid Ethereum address:"+transferabilityData.newHolder);
+                    throw new Error("Invalid Ethereum address: "+transferabilityData.newHolder);
                 }
                 params = [transferabilityData.newHolder, encryptedRemark];
                 break
-            case "transferBeneficiary" :
+            case TransferabilityActions.TRANSFER_BENEFICIARY :
                 if (!this.isAddress(transferabilityData.newBeneficiary as string)) {
                     throw new Error("Invalid Ethereum address:"+transferabilityData.newBeneficiary);
                 }
                 params = [transferabilityData.newBeneficiary, encryptedRemark];
                 break
-            case "nominate" :
-                if (!this.isAddress(transferabilityData.newBeneficiary as string)) {
-                    throw new Error("Invalid Ethereum address:"+transferabilityData.newBeneficiary);
-                }
-                params = [transferabilityData.newBeneficiary, encryptedRemark];
-                break
-            case "transferOwners" :
+            case TransferabilityActions.TRANSFER_OWNERS :
                 if (!this.isAddress(transferabilityData.newBeneficiary as string) || !this.isAddress(transferabilityData.newHolder as string)) {
                     throw new Error("Invalid Ethereum address:"+transferabilityData.newBeneficiary+", "+transferabilityData.newHolder);
                 }
-                params = [transferabilityData.newBeneficiary, encryptedRemark];
+                params = [transferabilityData.newHolder, transferabilityData.newBeneficiary, encryptedRemark];
                 break
-            default:
+            case TransferabilityActions.REJECT_TRANSFER_HOLDER :
+            case TransferabilityActions.REJECT_TRANSFER_BENEFICIARY :
+            case TransferabilityActions.REJECT_TRANSFER_OWNERS :
+            case TransferabilityActions.RETURN_TO_ISSUER :
                 params = [encryptedRemark];
-                console.error("Invalid action:", action);
-                return params
+                break
         }
+        return params
+    }
+
+    protected getProvider(){
+        const rpcUrl = DefaultDocumentService.CHAININFO.rpcUrl;
+        if (!rpcUrl) {
+            throw new Error("RPC URL is not defined for the selected chain.");
+        }
+        const JsonRpcProvider = ethers.version.startsWith("6.")
+            ? (ethers as any).JsonRpcProvider
+            : (ethers as any).providers.JsonRpcProvider;
+        return new JsonRpcProvider(rpcUrl);
+
     }
 }

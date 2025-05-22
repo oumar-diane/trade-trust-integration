@@ -5,6 +5,7 @@ import {CHAIN_ID} from "@trustvc/trustvc";
 export interface DocumentModel {
     documentId?: string,
     chainId?: CHAIN_ID,
+    name?:string
     credentialSubject?: CredentialSubjects,
     owner?: string,
     holder?: string,
@@ -16,16 +17,21 @@ export interface DocumentModel {
 }
 
 export interface DocumentTransferabilityModel {
-    chainId?: CHAIN_ID,
+    documentId?:string
     remarks?: string,
     newHolder?: string,
-    newBeneficiary?: string,
-    titleEscrowAddress?: string,
+    newBeneficiary?: string
+    chainId?: CHAIN_ID
+    tokenRegistry?: string
+    tokenId?: string
 }
 
 export enum TransferabilityActions{
     TRANSFER_OWNERS = 'transferOwners',
     TRANSFER_HOLDER = 'transferHolder',
     TRANSFER_BENEFICIARY = 'transferBeneficiary',
-    NOMINATE = 'nominate'
+    REJECT_TRANSFER_HOLDER = 'rejectTransferHolder',
+    REJECT_TRANSFER_BENEFICIARY = 'rejectTransferBeneficiary',
+    REJECT_TRANSFER_OWNERS = 'rejectTransferOwners',
+    RETURN_TO_ISSUER = 'returnToIssuer'
 }

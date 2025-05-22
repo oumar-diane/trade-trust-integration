@@ -6,6 +6,12 @@
       "id": "did:web:tradetrust.zenithblox.network#keys-1",
       "controller": "did:web:tradetrust.zenithblox.network",
       "publicKeyBase58": "oaGyNyDaFDck3oCcDXSa1GBFzDq1jfuEdhd1oUXYVGY2xBehUAJum7qhFrH1dWpVd1kL2UMdscrXzp5TBECJCJX7jq8KCyJxM7B7F3ZvpbpLiMQoSpStfBD9TJZSUGMBQJ7"
+    },
+    {
+      "type": "Bls12381G2Key2020",
+      "id": "did:web:tradetrust.zenithblox.network#keys-2",
+      "controller": "did:web:tradetrust.zenithblox.network",
+      "publicKeyBase58": "qQX794LmM8vmDqAQjnjWvZ1NKUx2moQEbFMs4Dt8Xp2wo7NBpGG7CobdxwPby1x1HkHkHuexPNTAdUDBn1pLfSEF8LzGFDGAPvsRLdA57otvuzhfxQ6xKnWPE9G7Qj4nmtk"
     }
   ],
   "@context": [
@@ -13,15 +19,19 @@
     "https://w3id.org/security/suites/bls12381-2020/v1"
   ],
   "authentication": [
-    "did:web:tradetrust.zenithblox.network#keys-1"
+    "did:web:tradetrust.zenithblox.network#keys-1",
+    "did:web:tradetrust.zenithblox.network#keys-2"
   ],
   "assertionMethod": [
-    "did:web:tradetrust.zenithblox.network#keys-1"
+    "did:web:tradetrust.zenithblox.network#keys-1",
+    "did:web:tradetrust.zenithblox.network#keys-2"
   ],
   "capabilityInvocation": [
-    "did:web:tradetrust.zenithblox.network#keys-1"
+    "did:web:tradetrust.zenithblox.network#keys-1",
+    "did:web:tradetrust.zenithblox.network#keys-2"
   ],
   "capabilityDelegation": [
-    "did:web:tradetrust.zenithblox.network#keys-1"
+    "did:web:tradetrust.zenithblox.network#keys-1",
+    "did:web:tradetrust.zenithblox.network#keys-2"
   ]
 }

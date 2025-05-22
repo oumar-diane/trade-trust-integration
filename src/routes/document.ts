@@ -27,8 +27,8 @@ router.get("/", async function(req, res, next) {
 router.post("/transferability/:actionName", async function(req, res, next) {
     try {
         let { actionName } = req.params;
-        const body = req.body as { signedW3CDocument: SignedVerifiableCredential, transferabilityData: DocumentTransferabilityModel };
-        const transferabilityResult = await documentService.applyDocumentTransferabilityAction(body.transferabilityData, body.signedW3CDocument, actionName as TransferabilityActions);
+        const body = req.body as  DocumentTransferabilityModel;
+        const transferabilityResult = await documentService.applyDocumentTransferabilityAction(body, actionName as TransferabilityActions);
 
         return res.json({
             ...transferabilityResult,
@@ -61,7 +61,7 @@ router.post("/:documentId", async function(req, res, next) {
         documentId = documentId?.toUpperCase() || '';
 
         const rawDocument = req.body as DocumentModel;
-        console.log("body: ", req.body)
+        console.log("documentId: ", documentId)
         rawDocument.documentId = documentId;
 
         const result = await documentService.createDocument(rawDocument)
