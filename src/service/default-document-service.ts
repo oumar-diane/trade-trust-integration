@@ -85,7 +85,7 @@ export class DefaultDocumentService implements DocumentService {
         })
         const title_escrow_factory = new ethers.Interface(v5Contracts.TitleEscrow__factory.abi);
         const provider = this.getProvider()
-        const tile_escrow_address = await getTitleEscrowAddress(transferabilityData.tokenRegistry!, "0x" + transferabilityData.chainId, provider)
+        const tile_escrow_address = await getTitleEscrowAddress(transferabilityData.tokenRegistry!, "0x" + transferabilityData.tokenId, provider)
         const params =  this.getTransferabilityAction(action, transferabilityData)
         const title_escrow_tx =  title_escrow_factory.encodeFunctionData(action, [...params]);
 
