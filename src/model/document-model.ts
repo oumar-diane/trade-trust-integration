@@ -30,6 +30,7 @@ export enum TransferabilityActions{
     TRANSFER_OWNERS = 'transferOwners',
     TRANSFER_HOLDER = 'transferHolder',
     TRANSFER_BENEFICIARY = 'transferBeneficiary',
+    NOMINATE = 'nominate',
     REJECT_TRANSFER_HOLDER = 'rejectTransferHolder',
     REJECT_TRANSFER_BENEFICIARY = 'rejectTransferBeneficiary',
     REJECT_TRANSFER_OWNERS = 'rejectTransferOwners',

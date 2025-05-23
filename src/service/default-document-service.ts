@@ -78,7 +78,6 @@ export class DefaultDocumentService implements DocumentService {
             "tokenId is required":transferabilityData.tokenId,
             "tokenRegistry is required":transferabilityData.tokenRegistry,
             "chainId is required":transferabilityData.chainId,
-            "newBeneficiary or newHolder is required":transferabilityData.newBeneficiary || transferabilityData.newHolder,
         })
         Object.assign(DefaultDocumentService.CHAININFO, {
             rpcUrl:getRPCUrl(transferabilityData.chainId!) || ""
@@ -154,6 +153,7 @@ export class DefaultDocumentService implements DocumentService {
 
         return {
             to:rawDocument.tokenRegistryAddress,
+            from:rawDocument.holder,
             signedW3CDocument: signedW3CDocument,
             name:rawDocument.name,
             data: tx,
@@ -212,6 +212,7 @@ export class DefaultDocumentService implements DocumentService {
                 params = [transferabilityData.newHolder, encryptedRemark];
                 break
             case TransferabilityActions.TRANSFER_BENEFICIARY :
+            case TransferabilityActions.NOMINATE:
                 if (!this.isAddress(transferabilityData.newBeneficiary as string)) {
                     throw new Error("Invalid Ethereum address:"+transferabilityData.newBeneficiary);
                 }

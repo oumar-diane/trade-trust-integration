@@ -15,7 +15,7 @@ export class AzureAddressBookStorageService implements StorageManagerService<Add
     }
 
     async delete(organizationId:string, rowKey: string){
-        this.tableClient?.deleteEntity(organizationId, rowKey)
+        await this.tableClient?.deleteEntity(organizationId, rowKey)
     }
 
     async update(organizationId:string, rowKey:string, entity: Addressbook){
