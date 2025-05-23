@@ -16,7 +16,7 @@ import {DocumentService, getDocumentSchema} from "./interface/document-service";
 import {SimpleParamsValidator} from "./simple-params-validator";
 import {decryptWithPrivateKey} from "../util/crypto-utils";
 import { Interface } from "@ethersproject/abi";
-import {DocumentDTO, StorageManagerService} from "@app/service/interface/storage-manager-service";
+import {DocumentDTO, StorageManagerService} from "../service/interface/storage-manager-service";
 import path from "node:path";
 import fs from "node:fs";
 import { ethers } from 'ethersV6';

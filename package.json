@@ -38,6 +38,6 @@
   },
   "_moduleAliases": {
     "@": "dist",
-    "@app": "dist/src"
+    "..": "dist/src"
   }
 }

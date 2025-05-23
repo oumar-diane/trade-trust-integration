@@ -1,4 +1,3 @@
-import {DidModel} from "@app/model/did-model";
 
 
 /**
@@ -94,6 +93,7 @@ export interface StorageManagerService<T> {
 export const DID_STORAGE_NAME = process.env.DID_STORAGE_NAME || "didstorage";
 export const TOKEN_REGISTRY_STORAGE_NAME = process.env.TOKEN_REGISTRY_STORAGE_NAME || "tokenregistrystorage";
 export const DOCUMENT_STORAGE_NAME = process.env.DOCUMENT_STORAGE_NAME || "documentstorage";
+export const ADDRESS_BOOK_STORAGE_NAME = process.env.ADDRESS_BOOK_STORAGE_NAME || "addressbookstorage";
 
 export type TokenRegistryDTO = {
     transactionHash: any;

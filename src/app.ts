@@ -7,6 +7,7 @@ import {documentRouter} from "./routes/document";
 import {tokenRegistryRouter} from "./routes/token-registry";
 import {connect} from "@ngrok/ngrok"
 import cors from "cors"
+import {addressBookRouter} from "./routes/addressBook";
 
 
 const app = express();
@@ -31,6 +32,7 @@ function boostrapHooks(){
     app.use('/.well-known', didRouter);
     app.use('/token-registry', tokenRegistryRouter);
     app.use('/document', documentRouter);
+    app.use('/address-book', addressBookRouter);
 
     // Global error handling middleware
     app.use((err:Error, req:any, res:any, next:any) => {

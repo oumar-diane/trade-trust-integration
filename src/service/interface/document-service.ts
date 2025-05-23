@@ -1,7 +1,7 @@
 import {DocumentsToVerify, SignedVerifiableCredential, SUPPORTED_CHAINS, VerificationFragment} from "@trustvc/trustvc";
 import {DocumentModel, DocumentTransferabilityModel, TransferabilityActions} from "../../model/document-model";
 import { TransactionRequest } from "@ethersproject/abstract-provider";
-import {DocumentDTO} from "@app/service/interface/storage-manager-service";
+import {DocumentDTO} from "../../service/interface/storage-manager-service";
 
 
 /**
