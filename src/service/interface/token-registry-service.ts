@@ -1,6 +1,6 @@
-import {TokenRegistryModel} from "../model/token-registry-model";
+import {TokenRegistryModel} from "../../model/token-registry-model";
 import { TransactionRequest } from "@ethersproject/abstract-provider";
-import {TokenRegistryDTO} from "../service/interface/storage-manager-service";
+import {TokenRegistryDTO} from "../../service/interface/storage-manager-service";
 
 
 /**

@@ -1,4 +1,4 @@
-import {Addressbook} from "../model/addressbook-model";
+import {Addressbook} from "../../model/addressbook-model";
 
 
 /**
